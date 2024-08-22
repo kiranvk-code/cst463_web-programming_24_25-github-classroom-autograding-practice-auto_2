@@ -1,0 +1,42 @@
+name: test1
+on:
+  - push
+  - workflow_dispatch
+  - repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up GCC
+      uses: egor-tensin/setup-gcc@v1
+      with:
+        version: latest
+
+    - name: Compile program
+      run: gcc -o test_add_numbers main.c add_numbers.c
+
+    - name: Run Addition Test
+      uses: classroom-resources/autograding-io-grader@v1
+      id: addition-test
+      with:
+        test-name: test1
+        command: ./test_add_numbers
+        input: 1 + 1
+        expected-output: The sum of 5 and 7 is 12
+        comparison-method: exact
+        timeout: 3
+
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        TEST1_RESULTS: "${{ steps.addition-test.outputs.result }}"
+      with:
+        runners: addition-test
