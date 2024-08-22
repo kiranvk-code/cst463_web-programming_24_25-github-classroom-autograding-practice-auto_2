@@ -29,7 +29,6 @@ jobs:
       with:
         test-name: test1
         command: ./test_add_numbers
-        input: 1 + 1
         expected-output: The sum of 5 and 7 is 12
         comparison-method: exact
         timeout: 3
